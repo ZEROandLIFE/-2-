@@ -1,0 +1,27 @@
+@use './variables.scss';
+@use './mixins.scss';
+@use 'sass:color';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: variables.$light-bg;
+  color: variables.$text-primary;
+  line-height: 1.5;
+  transition: background-color variables.$transition-duration;
+}
+
+a {
+  color: variables.$accent-color;
+  text-decoration: none;
+  transition: color variables.$transition-duration;
+
+  &:hover {
+    color: color.adjust(variables.$accent-color, $lightness: -10%);
+  }
+}
