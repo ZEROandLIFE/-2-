@@ -22,13 +22,16 @@
     <div class="data-management__content">
       <div class="data-management__toolbar">
         <div class="data-management__search">
-          <input
+          <ElInput
             v-model="searchQuery"
-            type="text"
-            class="data-management__search-input"
             placeholder="搜索数据..."
+            clearable
             @input="handleSearch"
-          />
+          >
+            <template #prefix>
+              <span>🔍</span>
+            </template>
+          </ElInput>
         </div>
         <div class="data-management__actions">
           <button class="data-management__btn" @click="handleExport">
@@ -81,7 +84,33 @@
                 :key="field.fieldKey"
                 class="data-table__col"
               >
-                <span class="data-table__cell">{{
+                <template
+                  v-if="field.type === 'image' && item.data[field.fieldKey]"
+                >
+                  <el-image
+                    :src="String(item.data[field.fieldKey])"
+                    :preview-src-list="[String(item.data[field.fieldKey])]"
+                    fit="cover"
+                    style="
+                      width: 60px;
+                      height: 60px;
+                      border-radius: 4px;
+                      cursor: pointer;
+                    "
+                  />
+                </template>
+                <template
+                  v-else-if="field.type === 'file' && item.data[field.fieldKey]"
+                >
+                  <a
+                    :href="String(item.data[field.fieldKey])"
+                    target="_blank"
+                    class="file-link"
+                  >
+                    📎 查看文件
+                  </a>
+                </template>
+                <span v-else class="data-table__cell">{{
                   getFieldValue(item, field.fieldKey)
                 }}</span>
               </td>
@@ -170,7 +199,13 @@
   import { useRouter, useRoute } from "vue-router";
   import { useFormDataStore } from "@/stores/formData";
   import { useEditorStore } from "@/stores/editor";
-  import { ElMessage, ElPagination, ElDialog } from "element-plus";
+  import {
+    ElMessage,
+    ElPagination,
+    ElDialog,
+    ElInput,
+    ElImage,
+  } from "element-plus";
   import type { FormData, FieldConfig } from "@/api/types";
 
   const router = useRouter();
@@ -396,24 +431,29 @@
 
   .data-management__search {
     flex: 1;
-    max-width: 300px;
+    max-width: 400px;
   }
 
-  .data-management__search-input {
-    width: 100%;
-    padding: 10px 14px;
-    border: 2px solid #e8eef3;
-    border-radius: 10px;
+  .data-management__search :deep(.el-input__wrapper) {
+    padding: 8px 16px;
+    border-radius: 24px;
+    box-shadow: 0 0 0 1px #e8eef3;
+  }
+
+  .data-management__search :deep(.el-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px #769fcd;
+  }
+
+  .data-management__search :deep(.el-input__wrapper.is-focus) {
+    box-shadow: 0 0 0 2px #769fcd;
+  }
+
+  .data-management__search :deep(.el-input__inner) {
     font-size: 14px;
-    color: #1e2022;
-    outline: none;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
   }
 
-  .data-management__search-input:focus {
-    border-color: #769fcd;
-    box-shadow: 0 0 0 3px rgba(118, 159, 205, 0.1);
+  .data-management__search :deep(.el-input__prefix) {
+    color: #769fcd;
   }
 
   .data-management__actions {
@@ -422,29 +462,29 @@
   }
 
   .data-management__btn {
-    padding: 10px 20px;
-    border: 2px solid #e8eef3;
-    border-radius: 10px;
-    background: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #f0f5f9;
     color: #52616b;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
   }
 
   .data-management__btn:hover {
-    border-color: #769fcd;
-    color: #769fcd;
+    background: #e8eef3;
+    color: #1e2022;
   }
 
   .data-management__btn--danger {
-    border-color: #fee2e2;
+    background: #fef2f2;
     color: #dc2626;
   }
 
   .data-management__btn--danger:hover {
-    background: #fef2f2;
+    background: #fee2e2;
   }
 
   .data-management__btn:disabled {
@@ -493,6 +533,16 @@
   .data-table__cell {
     font-size: 14px;
     color: #1e2022;
+  }
+
+  .file-link {
+    color: #769fcd;
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+  .file-link:hover {
+    text-decoration: underline;
   }
 
   .data-table__action-btn {

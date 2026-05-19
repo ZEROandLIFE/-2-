@@ -115,21 +115,16 @@
 
           <div class="data-table-toolbar">
             <div class="search-box">
-              <input
+              <ElInput
                 v-model="searchKeyword"
-                type="text"
-                placeholder="搜索..."
-                class="search-input"
+                placeholder="搜索数据..."
+                clearable
                 @keyup.enter="handleSearch"
-              />
-              <button class="search-btn" @click="handleSearch">搜索</button>
-              <button
-                v-if="searchKeyword"
-                class="reset-btn"
-                @click="resetSearch"
               >
-                重置
-              </button>
+                <template #prefix>
+                  <span>🔍</span>
+                </template>
+              </ElInput>
             </div>
             <div class="batch-actions" v-if="selectedDataIds.length > 0">
               <span>已选择 {{ selectedDataIds.length }} 条</span>
@@ -283,7 +278,13 @@
   import ComponentPanel from "@/components/editor/ComponentPanel.vue";
   import EditorCanvas from "@/components/editor/EditorCanvas.vue";
   import PropertyPanel from "@/components/editor/PropertyPanel.vue";
-  import { ElSelect, ElOption, ElDialog, ElMessage } from "element-plus";
+  import {
+    ElSelect,
+    ElOption,
+    ElDialog,
+    ElMessage,
+    ElInput,
+  } from "element-plus";
   import type { FormData } from "@/api/types";
 
   const router = useRouter();
@@ -442,11 +443,6 @@
       );
     });
     selectedDataIds.value = [];
-  };
-
-  const resetSearch = () => {
-    searchKeyword.value = "";
-    formDataList.value = originalFormDataList.value;
   };
 
   const handleSort = (fieldKey: string) => {
@@ -889,6 +885,41 @@
 
   .data-table-btn:hover {
     background: #e8eef3;
+  }
+
+  .data-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e8eef3;
+  }
+
+  .search-box {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  .search-box :deep(.el-input__wrapper) {
+    padding: 8px 16px;
+    border-radius: 24px;
+    box-shadow: 0 0 0 1px #e8eef3;
+  }
+
+  .search-box :deep(.el-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px #769fcd;
+  }
+
+  .search-box :deep(.el-input__wrapper.is-focus) {
+    box-shadow: 0 0 0 2px #769fcd;
+  }
+
+  .search-box :deep(.el-input__inner) {
+    font-size: 14px;
+  }
+
+  .search-box :deep(.el-input__prefix) {
+    color: #769fcd;
   }
 
   .data-table-container {

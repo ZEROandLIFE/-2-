@@ -161,19 +161,53 @@
               v-else-if="field.type === 'image' || field.type === 'file'"
               class="form-field__upload"
             >
-              <input
-                type="file"
-                :accept="field.type === 'image' ? 'image/*' : '*'"
-                class="form-field__upload-input"
-                @change="handleFileUpload(field.fieldKey, $event)"
-                :disabled="!field.editable"
-              />
-              <div class="form-field__upload-area">
-                <span>{{ field.type === "image" ? "📷" : "📎" }}</span>
-                <span>{{
-                  field.type === "image" ? "点击上传图片" : "点击上传文件"
-                }}</span>
-              </div>
+              <template
+                v-if="
+                  formData[field.fieldKey] &&
+                  typeof formData[field.fieldKey] === 'string'
+                "
+              >
+                <div class="upload-preview">
+                  <template v-if="field.type === 'image'">
+                    <el-image
+                      :src="String(formData[field.fieldKey])"
+                      fit="cover"
+                      class="upload-preview__image"
+                    />
+                  </template>
+                  <template v-else>
+                    <div class="upload-preview__file">
+                      <span>📎</span>
+                      <span>{{
+                        getFileName(String(formData[field.fieldKey]))
+                      }}</span>
+                    </div>
+                  </template>
+                  <button
+                    v-if="field.editable"
+                    type="button"
+                    class="upload-preview__remove"
+                    @click="removeFile(field.fieldKey)"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </template>
+              <template v-else>
+                <input
+                  type="file"
+                  :accept="field.type === 'image' ? 'image/*' : '*'"
+                  class="form-field__upload-input"
+                  @change="handleFileUpload(field.fieldKey, $event)"
+                  :disabled="!field.editable"
+                />
+                <div class="form-field__upload-area">
+                  <span>{{ field.type === "image" ? "📷" : "📎" }}</span>
+                  <span>{{
+                    field.type === "image" ? "点击上传图片" : "点击上传文件"
+                  }}</span>
+                </div>
+              </template>
             </div>
 
             <div
@@ -223,7 +257,7 @@
   import { useRouter, useRoute } from "vue-router";
   import { useEditorStore } from "@/stores/editor";
   import { useFormDataStore } from "@/stores/formData";
-  import { ElMessage } from "element-plus";
+  import { ElMessage, ElImage } from "element-plus";
   import type { FieldConfig } from "@/api/types";
 
   const router = useRouter();
@@ -314,9 +348,29 @@
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
     if (file) {
-      formData[fieldKey] = file.name;
+      const objectUrl = URL.createObjectURL(file);
+      formData[fieldKey] = objectUrl;
+      uploadedFiles[fieldKey] = { file, objectUrl };
     }
   };
+
+  const getFileName = (url: string) => {
+    if (!url) return "";
+    const parts = url.split("/");
+    return parts[parts.length - 1] || url.substring(0, 30) + "...";
+  };
+
+  const removeFile = (fieldKey: string) => {
+    if (uploadedFiles[fieldKey]) {
+      URL.revokeObjectURL(uploadedFiles[fieldKey].objectUrl);
+      delete uploadedFiles[fieldKey];
+    }
+    formData[fieldKey] = "";
+  };
+
+  const uploadedFiles = reactive<
+    Record<string, { file: File; objectUrl: string }>
+  >({});
 
   const validateForm = () => {
     for (const field of visibleFields.value) {
@@ -561,6 +615,52 @@
   .form-field__upload-area span:first-child {
     font-size: 32px;
     margin-bottom: 8px;
+  }
+
+  .upload-preview {
+    position: relative;
+    display: inline-block;
+  }
+
+  .upload-preview__image {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+
+  .upload-preview__file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 24px;
+    background: #f7fbfc;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #52616b;
+  }
+
+  .upload-preview__remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .upload-preview__remove:hover {
+    background: #b91c1c;
+    transform: scale(1.1);
   }
 
   .form-actions {

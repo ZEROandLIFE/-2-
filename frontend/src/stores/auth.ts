@@ -10,38 +10,33 @@ export interface UserInfo {
   nickname?: string;
   avatar?: string;
   role?: string;
+  department?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
 interface AuthData {
-  accessToken: string;
-  refreshToken: string;
+  token: string;
   user: UserInfo;
 }
 
-const getInitialAccessToken = (): string => {
-  return localStorage.getItem("accessToken") || "";
+const getInitialToken = (): string => {
+  return localStorage.getItem("token") || "";
 };
 
-const getInitialRefreshToken = (): string => {
-  return localStorage.getItem("refreshToken") || "";
+const getInitialUserInfo = (): UserInfo | null => {
+  const stored = localStorage.getItem("userInfo");
+  return stored ? JSON.parse(stored) : null;
 };
 
 export const useAuthStore = defineStore("auth", () => {
-  const accessToken = ref<string>(getInitialAccessToken());
-  const refreshToken = ref<string>(getInitialRefreshToken());
-  const userInfo = ref<UserInfo | null>(null);
+  const token = ref<string>(getInitialToken());
+  const userInfo = ref<UserInfo | null>(getInitialUserInfo());
   const isLoading = ref(false);
 
-  const setAccessToken = (token: string) => {
-    accessToken.value = token;
-    localStorage.setItem("accessToken", token);
-  };
-
-  const setRefreshToken = (token: string) => {
-    refreshToken.value = token;
-    localStorage.setItem("refreshToken", token);
+  const setToken = (newToken: string) => {
+    token.value = newToken;
+    localStorage.setItem("token", newToken);
   };
 
   const setUserInfo = (info: UserInfo | null) => {
@@ -54,21 +49,21 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   const logout = () => {
-    accessToken.value = "";
-    refreshToken.value = "";
+    token.value = "";
     userInfo.value = null;
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("token");
     localStorage.removeItem("userInfo");
   };
 
   const login = async (email: string, password: string) => {
     isLoading.value = true;
     try {
-      const response = await authApi.login({ email, password }) as ApiResponse<AuthData>;
+      const response = (await authApi.login({
+        email,
+        password,
+      })) as ApiResponse<AuthData>;
       if (response.code === 200 && response.data) {
-        setAccessToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
+        setToken(response.data.token);
         setUserInfo(response.data.user);
         return response;
       }
@@ -85,10 +80,13 @@ export const useAuthStore = defineStore("auth", () => {
   ) => {
     isLoading.value = true;
     try {
-      const response = await authApi.register({ username, email, password }) as ApiResponse<AuthData>;
+      const response = (await authApi.register({
+        username,
+        email,
+        password,
+      })) as ApiResponse<AuthData>;
       if (response.code === 200 && response.data) {
-        setAccessToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
+        setToken(response.data.token);
         setUserInfo(response.data.user);
         return response;
       }
@@ -98,26 +96,9 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
-  const refreshTokenFn = async () => {
-    try {
-      const response = await authApi.refreshToken({
-        refreshToken: refreshToken.value,
-      }) as ApiResponse<AuthData>;
-      if (response.code === 200 && response.data) {
-        setAccessToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
-        return response;
-      }
-      throw new Error(response.message || "刷新token失败");
-    } catch (error) {
-      logout();
-      throw error;
-    }
-  };
-
   const getMe = async () => {
     try {
-      const response = await authApi.getMe() as ApiResponse<UserInfo>;
+      const response = (await authApi.getMe()) as ApiResponse<UserInfo>;
       if (response.code === 200 && response.data) {
         setUserInfo(response.data);
         return response;
@@ -136,17 +117,14 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   return {
-    accessToken,
-    refreshToken,
+    token,
     userInfo,
     isLoading,
-    setAccessToken,
-    setRefreshToken,
+    setToken,
     setUserInfo,
     logout,
     login,
     register,
-    refreshTokenFn,
     getMe,
     logoutApi,
   };

@@ -52,7 +52,6 @@
 </template>
 
 <script setup lang="ts">
-  import { defineProps, defineEmits } from "vue";
   import { ElDialog } from "element-plus";
   import type { Widget } from "@/api/widget";
 

@@ -47,6 +47,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/editor/index.vue"),
   },
   {
+    path: "/editor/publish",
+    name: "FormPublish",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/editor/FormPublish.vue"),
+  },
+  {
     path: "/app/form-fill",
     name: "FormFill",
     meta: { requiresAuth: true },
@@ -84,7 +90,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("token");
   const requiresAuth = to.meta.requiresAuth;
   const isAuthenticated = !!token;
 

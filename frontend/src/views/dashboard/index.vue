@@ -1,8 +1,42 @@
 <template>
   <div class="dashboard">
     <div class="dashboard__header">
-      <h1 class="dashboard__title">仪表盘</h1>
-      <p class="dashboard__subtitle">欢迎回来，管理您的应用</p>
+      <div class="header-left">
+        <h1 class="dashboard__title">仪表盘</h1>
+        <p class="dashboard__subtitle">欢迎回来，管理您的应用</p>
+      </div>
+      <div class="header-right">
+        <div class="user-info" v-if="authStore.userInfo">
+          <span class="user-info__name">{{
+            authStore.userInfo.nickname || authStore.userInfo.username
+          }}</span>
+          <span class="user-info__email">{{ authStore.userInfo.email }}</span>
+          <span
+            class="user-info__department"
+            v-if="authStore.userInfo.department"
+          >
+            部门: {{ authStore.userInfo.department }}
+          </span>
+        </div>
+        <el-dropdown trigger="click" @command="handleCommand">
+          <el-button type="primary" circle>
+            {{
+              authStore.userInfo?.nickname?.[0] ||
+              authStore.userInfo?.username?.[0] ||
+              "U"
+            }}
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="profile">个人资料</el-dropdown-item>
+              <el-dropdown-item command="settings">系统设置</el-dropdown-item>
+              <el-dropdown-item command="logout" divided
+                >退出登录</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
     </div>
 
     <div class="dashboard__stats">
@@ -46,6 +80,7 @@
           @edit="handleEdit"
           @delete="handleDelete"
           @preview="handlePreview"
+          @data="handleData"
         />
       </div>
 
@@ -68,28 +103,111 @@
         @cancel="closeModal"
       />
     </ElDialog>
+
+    <ElDialog v-model="showProfileModal" title="个人资料" width="500px">
+      <el-form :model="profileForm" label-width="100px">
+        <el-form-item label="用户名">
+          <el-input v-model="profileForm.username" disabled />
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="profileForm.email" disabled />
+        </el-form-item>
+        <el-form-item label="昵称">
+          <el-input v-model="profileForm.nickname" placeholder="请输入昵称" />
+        </el-form-item>
+        <el-form-item label="部门">
+          <el-input v-model="profileForm.department" placeholder="请输入部门" />
+        </el-form-item>
+        <el-form-item label="角色">
+          <el-tag
+            :type="authStore.userInfo?.role === 'admin' ? 'danger' : 'info'"
+          >
+            {{ authStore.userInfo?.role === "admin" ? "管理员" : "普通用户" }}
+          </el-tag>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showProfileModal = false">取消</el-button>
+        <el-button type="primary" @click="saveProfile">保存</el-button>
+      </template>
+    </ElDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from "vue";
+  import { ref, reactive, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import { useApplicationStore } from "@/stores/application";
+  import { useAuthStore } from "@/stores/auth";
   import AppCard from "@/components/common/AppCard.vue";
   import AppForm from "@/components/common/AppForm.vue";
-  import { ElMessage, ElDialog } from "element-plus";
+  import { ElMessage, ElMessageBox } from "element-plus";
   import type { Application } from "@/api/application";
 
   const router = useRouter();
   const appStore = useApplicationStore();
+  const authStore = useAuthStore();
 
   const showCreateModal = ref(false);
+  const showProfileModal = ref(false);
   const editingApp = ref<Application | null>(null);
+
+  const profileForm = reactive({
+    username: "",
+    email: "",
+    nickname: "",
+    department: "",
+  });
 
   onMounted(() => {
     appStore.loadApplications();
     appStore.loadStats();
+    loadUserProfile();
   });
+
+  const loadUserProfile = () => {
+    if (authStore.userInfo) {
+      profileForm.username = authStore.userInfo.username || "";
+      profileForm.email = authStore.userInfo.email || "";
+      profileForm.nickname = authStore.userInfo.nickname || "";
+      profileForm.department = authStore.userInfo.department || "";
+    }
+  };
+
+  const handleCommand = (command: string) => {
+    switch (command) {
+      case "profile":
+        loadUserProfile();
+        showProfileModal.value = true;
+        break;
+      case "settings":
+        router.push("/settings");
+        break;
+      case "logout":
+        handleLogout();
+        break;
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await ElMessageBox.confirm("确定要退出登录吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      });
+      await authStore.logoutApi();
+      router.push("/auth/login");
+    } catch {
+      // 用户取消
+    }
+  };
+
+  const saveProfile = async () => {
+    // TODO: 调用API保存用户资料
+    ElMessage.success("资料已保存（接口待实现）");
+    showProfileModal.value = false;
+  };
 
   const handleSubmit = async (data: {
     name: string;
@@ -135,6 +253,10 @@
     router.push(`/editor?appId=${app._id}`);
   };
 
+  const handleData = (app: Application) => {
+    router.push(`/editor?appId=${app._id}&activeTab=data`);
+  };
+
   const closeModal = () => {
     showCreateModal.value = false;
     editingApp.value = null;
@@ -149,7 +271,14 @@
   }
 
   .dashboard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     margin-bottom: 32px;
+  }
+
+  .header-left {
+    flex: 1;
   }
 
   .dashboard__title {
@@ -163,6 +292,35 @@
     font-size: 14px;
     color: #52616b;
     margin: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .user-info__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e2022;
+  }
+
+  .user-info__email {
+    font-size: 12px;
+    color: #52616b;
+  }
+
+  .user-info__department {
+    font-size: 12px;
+    color: #769fcd;
   }
 
   .dashboard__stats {

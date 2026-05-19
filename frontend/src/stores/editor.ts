@@ -108,24 +108,6 @@ export const useEditorStore = defineStore("editor", () => {
           description: "关联其他表单数据",
         },
         { name: "流水号", type: "serial", icon: "🔢", description: "自动编号" },
-        {
-          name: "手机号",
-          type: "phone",
-          icon: "📱",
-          description: "手机号验证",
-        },
-        {
-          name: "计算",
-          type: "calculation",
-          icon: "🧮",
-          description: "公式计算",
-        },
-        {
-          name: "富文本",
-          type: "richtext",
-          icon: "✏️",
-          description: "HTML编辑",
-        },
       ],
     },
   ];
