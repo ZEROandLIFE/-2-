@@ -1,4 +1,3 @@
-import request from "./request";
 import type { ApiResponse } from "./types";
 
 export interface Department {
@@ -68,113 +67,158 @@ export interface User {
   avatar?: string;
 }
 
-// ============ 部门 API ============
+import request from "./request";
 
 export const departmentApi = {
-  // 创建部门
-  create: (data: { name: string; parentId?: string; leaderId?: string; description?: string; order?: number }) => {
-    return request.post<ApiResponse<Department>>("/organization/departments", data);
+  create: (data: {
+    name: string;
+    parentId?: string;
+    leaderId?: string;
+    description?: string;
+    order?: number;
+  }) => {
+    return request.post<ApiResponse<Department>>(
+      "/organization/departments",
+      data,
+    ) as unknown as Promise<ApiResponse<Department>>;
   },
 
-  // 获取部门列表（树形）
   list: () => {
-    return request.get<ApiResponse<Department[]>>("/organization/departments");
+    return request.get<ApiResponse<Department[]>>(
+      "/organization/departments",
+    ) as unknown as Promise<ApiResponse<Department[]>>;
   },
 
-  // 获取单个部门
   get: (id: string) => {
-    return request.get<ApiResponse<Department>>(`/organization/departments/${id}`);
+    return request.get<ApiResponse<Department>>(
+      `/organization/departments/${id}`,
+    ) as unknown as Promise<ApiResponse<Department>>;
   },
 
-  // 更新部门
-  update: (id: string, data: { name?: string; parentId?: string; leaderId?: string; description?: string; order?: number }) => {
-    return request.put<ApiResponse<Department>>(`/organization/departments/${id}`, data);
+  update: (
+    id: string,
+    data: {
+      name?: string;
+      parentId?: string;
+      leaderId?: string;
+      description?: string;
+      order?: number;
+    },
+  ) => {
+    return request.put<ApiResponse<Department>>(
+      `/organization/departments/${id}`,
+      data,
+    ) as unknown as Promise<ApiResponse<Department>>;
   },
 
-  // 删除部门
   delete: (id: string) => {
-    return request.delete<ApiResponse<null>>(`/organization/departments/${id}`);
+    return request.delete<ApiResponse<null>>(
+      `/organization/departments/${id}`,
+    ) as unknown as Promise<ApiResponse<null>>;
   },
 
-  // 获取部门成员
   getMembers: (departmentId: string) => {
-    return request.get<ApiResponse<DepartmentMember[]>>(`/organization/departments/${departmentId}/members`);
+    return request.get<ApiResponse<DepartmentMember[]>>(
+      `/organization/departments/${departmentId}/members`,
+    ) as unknown as Promise<ApiResponse<DepartmentMember[]>>;
   },
 
-  // 添加部门成员
-  addMember: (departmentId: string, data: { userId: string; isPrimary?: boolean }) => {
-    return request.post<ApiResponse<DepartmentMember>>(`/organization/departments/${departmentId}/members`, data);
+  addMember: (
+    departmentId: string,
+    data: { userId: string; isPrimary?: boolean },
+  ) => {
+    return request.post<ApiResponse<DepartmentMember>>(
+      `/organization/departments/${departmentId}/members`,
+      data,
+    ) as unknown as Promise<ApiResponse<DepartmentMember>>;
   },
 
-  // 移除部门成员
   removeMember: (departmentId: string, userId: string) => {
-    return request.delete<ApiResponse<null>>(`/organization/departments/${departmentId}/members/${userId}`);
+    return request.delete<ApiResponse<null>>(
+      `/organization/departments/${departmentId}/members/${userId}`,
+    ) as unknown as Promise<ApiResponse<null>>;
   },
 
-  // 获取部门的待审批申请
   getApplications: (departmentId: string) => {
-    return request.get<ApiResponse<DepartmentApplication[]>>(`/organization/applications/department/${departmentId}`);
+    return request.get<ApiResponse<DepartmentApplication[]>>(
+      `/organization/applications/department/${departmentId}`,
+    ) as unknown as Promise<ApiResponse<DepartmentApplication[]>>;
   },
 };
-
-// ============ 角色 API ============
 
 export const roleApi = {
-  // 创建角色
-  create: (data: { name: string; permissions?: string[]; description?: string }) => {
-    return request.post<ApiResponse<Role>>("/organization/roles", data);
+  create: (data: {
+    name: string;
+    permissions?: string[];
+    description?: string;
+  }) => {
+    return request.post<ApiResponse<Role>>(
+      "/organization/roles",
+      data,
+    ) as unknown as Promise<ApiResponse<Role>>;
   },
 
-  // 获取角色列表
   list: () => {
-    return request.get<ApiResponse<Role[]>>("/organization/roles");
+    return request.get<ApiResponse<Role[]>>(
+      "/organization/roles",
+    ) as unknown as Promise<ApiResponse<Role[]>>;
   },
 
-  // 获取单个角色
   get: (id: string) => {
-    return request.get<ApiResponse<Role>>(`/organization/roles/${id}`);
+    return request.get<ApiResponse<Role>>(
+      `/organization/roles/${id}`,
+    ) as unknown as Promise<ApiResponse<Role>>;
   },
 
-  // 更新角色
-  update: (id: string, data: { name?: string; permissions?: string[]; description?: string }) => {
-    return request.put<ApiResponse<Role>>(`/organization/roles/${id}`, data);
+  update: (
+    id: string,
+    data: { name?: string; permissions?: string[]; description?: string },
+  ) => {
+    return request.put<ApiResponse<Role>>(
+      `/organization/roles/${id}`,
+      data,
+    ) as unknown as Promise<ApiResponse<Role>>;
   },
 
-  // 删除角色
   delete: (id: string) => {
-    return request.delete<ApiResponse<null>>(`/organization/roles/${id}`);
+    return request.delete<ApiResponse<null>>(
+      `/organization/roles/${id}`,
+    ) as unknown as Promise<ApiResponse<null>>;
   },
 };
-
-// ============ 用户 API ============
 
 export const userApi = {
-  // 获取所有用户
   list: () => {
-    return request.get<ApiResponse<User[]>>("/organization/users");
+    return request.get<ApiResponse<User[]>>(
+      "/organization/users",
+    ) as unknown as Promise<ApiResponse<User[]>>;
   },
 
-  // 获取用户的部门列表
   getDepartments: (userId: string) => {
-    return request.get<ApiResponse<Department[]>>(`/organization/users/${userId}/departments`);
+    return request.get<ApiResponse<Department[]>>(
+      `/organization/users/${userId}/departments`,
+    ) as unknown as Promise<ApiResponse<Department[]>>;
   },
 };
 
-// ============ 申请 API ============
-
 export const applicationApi = {
-  // 申请加入部门
   join: (data: { departmentId: string; reason?: string }) => {
-    return request.post<ApiResponse<DepartmentApplication>>("/organization/applications/join", data);
+    return request.post<ApiResponse<DepartmentApplication>>(
+      "/organization/applications/join",
+      data,
+    ) as unknown as Promise<ApiResponse<DepartmentApplication>>;
   },
 
-  // 获取我的申请列表
   myList: () => {
-    return request.get<ApiResponse<DepartmentApplication[]>>("/organization/applications/my");
+    return request.get<ApiResponse<DepartmentApplication[]>>(
+      "/organization/applications/my",
+    ) as unknown as Promise<ApiResponse<DepartmentApplication[]>>;
   },
 
-  // 审批申请
   review: (id: string, action: "approved" | "rejected") => {
-    return request.put<ApiResponse<null>>(`/organization/applications/${id}/review`, { action });
+    return request.put<ApiResponse<null>>(
+      `/organization/applications/${id}/review`,
+      { action },
+    ) as unknown as Promise<ApiResponse<null>>;
   },
 };

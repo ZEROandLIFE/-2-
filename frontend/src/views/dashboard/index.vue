@@ -79,6 +79,22 @@
       </div>
     </div>
 
+    <div class="dashboard__section">
+      <div class="dashboard__toolbar">
+        <h2 class="dashboard__section-title">流程管理</h2>
+        <div class="section-actions">
+          <button class="btn btn--secondary" @click="goToWorkflows">
+            <span class="btn__icon">📋</span>
+            <span>流程列表</span>
+          </button>
+          <button class="btn btn--secondary" @click="goToApprovals">
+            <span class="btn__icon">✅</span>
+            <span>我的审批</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="dashboard__content">
       <div class="dashboard__toolbar">
         <h2 class="dashboard__section-title">我的应用</h2>
@@ -279,6 +295,14 @@
 
   const goToRoles = () => {
     router.push("/admin/roles");
+  };
+
+  const goToWorkflows = () => {
+    router.push("/admin/workflows");
+  };
+
+  const goToApprovals = () => {
+    router.push("/admin/approvals");
   };
 
   const closeModal = () => {

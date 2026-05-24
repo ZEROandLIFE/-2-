@@ -7,10 +7,14 @@ export const formApi = {
     return request.post("/forms", data);
   },
 
-  list: (applicationId: string): Promise<ApiResponse<Form[]>> => {
+  list: (applicationId?: string): Promise<ApiResponse<Form[]>> => {
     return request.get("/forms", {
-      params: { applicationId },
+      params: applicationId ? { applicationId } : {},
     });
+  },
+
+  getAll: (): Promise<ApiResponse<Form[]>> => {
+    return request.get("/forms/all");
   },
 
   get: (id: string): Promise<ApiResponse<Form>> => {

@@ -412,8 +412,8 @@
       return;
     }
 
-    const parentId = departmentForm.value.parentId || null;
-    const leaderId = departmentForm.value.leaderId || null;
+    const parentId = departmentForm.value.parentId || undefined;
+    const leaderId = departmentForm.value.leaderId || undefined;
 
     try {
       if (editingDepartment.value) {

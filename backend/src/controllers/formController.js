@@ -56,6 +56,25 @@ export const getForms = async (req, res) => {
   }
 };
 
+export const getAllForms = async (req, res) => {
+  try {
+    const forms = await Form.find({}).sort({ createdAt: -1 });
+    
+    res.status(200).json({
+      code: 200,
+      message: '查询成功',
+      data: forms,
+    });
+  } catch (error) {
+    console.error('Get all forms error:', error);
+    res.status(500).json({
+      code: 500,
+      message: '查询失败',
+      data: null,
+    });
+  }
+};
+
 export const getForm = async (req, res) => {
   try {
     const { id } = req.params;

@@ -31,11 +31,11 @@ export const authenticateToken = async (req, res, next) => {
 export const protect = authenticateToken;
 
 export const generateAccessToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 export const generateRefreshToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 export default {

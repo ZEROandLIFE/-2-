@@ -2,6 +2,7 @@ import express from "express";
 import {
   createForm,
   getForms,
+  getAllForms,
   getForm,
   updateForm,
   deleteForm,
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router.post("/", authenticateToken, createForm);
 router.get("/", authenticateToken, getForms);
+router.get("/all", authenticateToken, getAllForms);
 router.get("/:id", authenticateToken, getForm);
 router.put("/:id", authenticateToken, updateForm);
 router.delete("/:id", authenticateToken, deleteForm);

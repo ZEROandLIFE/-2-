@@ -275,6 +275,18 @@ export const useEditorStore = defineStore("editor", () => {
     }
   };
 
+  const loadForms = async () => {
+    isLoading.value = true;
+    try {
+      const response = (await formApi.getAll()) as ApiResponse<Form[]>;
+      if (response.code === 200) {
+        forms.value = response.data;
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   const loadFormsByApp = async (appId: string) => {
     isLoading.value = true;
     try {
@@ -419,6 +431,7 @@ export const useEditorStore = defineStore("editor", () => {
     selectComponent,
     clearSelection,
     loadForm,
+    loadForms,
     loadFormsByApp,
     createForm,
     saveForm,

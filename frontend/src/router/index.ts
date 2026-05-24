@@ -91,6 +91,30 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/admin/RoleManager.vue"),
   },
   {
+    path: "/admin/workflows",
+    name: "WorkflowList",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/admin/WorkflowList.vue"),
+  },
+  {
+    path: "/admin/approvals",
+    name: "WorkflowApproval",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/admin/WorkflowApproval.vue"),
+  },
+  {
+    path: "/editor/workflow",
+    name: "WorkflowDesign",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/editor/WorkflowDesign.vue"),
+  },
+  {
+    path: "/editor/workflow/:id",
+    name: "WorkflowDesignEdit",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/editor/WorkflowDesign.vue"),
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/auth/login",
   },

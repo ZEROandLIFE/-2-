@@ -69,9 +69,18 @@
       <div class="data-panel">
         <div class="data-panel__header">
           <h3 class="data-panel__title">表单列表</h3>
-          <button class="data-panel__add-btn" @click="handleCreateForm">
-            + 新建表单
-          </button>
+          <div class="data-panel__actions">
+            <button class="data-panel__add-btn" @click="handleCreateForm">
+              + 新建表单
+            </button>
+            <button
+              class="data-panel__workflow-btn"
+              v-if="selectedFormId"
+              @click="handleConfigureWorkflow"
+            >
+              ⚙️ 配置流程
+            </button>
+          </div>
         </div>
         <div class="data-panel__list">
           <div
@@ -394,6 +403,11 @@
     }
   };
 
+  const handleConfigureWorkflow = () => {
+    if (!selectedFormId.value) return;
+    router.push(`/editor/workflow?formId=${selectedFormId.value}`);
+  };
+
   const handleFormChange = async (formId: string) => {
     if (formId) {
       await editorStore.loadForm(formId);
@@ -582,7 +596,7 @@
 
         let successCount = 0;
         for (const data of dataList) {
-          await formDataStore.createFormData(selectedFormId.value!, data);
+          await formDataApi.create(selectedFormId.value!, data);
           successCount++;
         }
 
@@ -832,6 +846,29 @@
 
   .data-panel__add-btn:hover {
     background: rgba(118, 159, 205, 0.1);
+  }
+
+  .data-panel__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .data-panel__workflow-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #769fcd 0%, #5a85b8 100%);
+    color: #ffffff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(118, 159, 205, 0.3);
+  }
+
+  .data-panel__workflow-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(118, 159, 205, 0.4);
   }
 
   .data-panel__list {
