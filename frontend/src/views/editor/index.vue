@@ -107,9 +107,19 @@
               <button class="data-table-btn" @click="handleRefresh">
                 刷新
               </button>
+              <button class="data-table-btn" @click="triggerImport">
+                导入CSV
+              </button>
               <button class="data-table-btn" @click="handleExport">
                 导出CSV
               </button>
+              <input
+                ref="importInputRef"
+                type="file"
+                accept=".csv"
+                style="display: none"
+                @change="handleImport"
+              />
             </div>
           </div>
 
@@ -303,6 +313,7 @@
   const sortField = ref<string | null>(null);
   const sortOrder = ref<"asc" | "desc">("asc");
   const originalFormDataList = ref<FormData[]>([]);
+  const importInputRef = ref<HTMLInputElement | null>(null);
 
   onMounted(async () => {
     const appId = route.query.appId as string;
@@ -530,6 +541,61 @@
     link.click();
     document.body.removeChild(link);
     ElMessage.success("导出成功");
+  };
+
+  const triggerImport = () => {
+    importInputRef.value?.click();
+  };
+
+  const handleImport = async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const text = e.target?.result as string;
+        const lines = text.split("\n").filter((line) => line.trim());
+        if (lines.length < 2) {
+          ElMessage.warning("CSV文件格式错误或没有数据");
+          return;
+        }
+
+        const headers = lines[0].split(",").map((h) => h.trim());
+        const fields = selectedFormFields.value;
+        const dataList: Record<string, unknown>[] = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(",").map((v) => v.trim());
+          const row: Record<string, unknown> = {};
+          headers.forEach((header, index) => {
+            const field = fields.find((f) => f.title === header);
+            if (field) {
+              row[field.fieldKey] = values[index] || "";
+            }
+          });
+          if (Object.keys(row).length > 0) {
+            dataList.push(row);
+          }
+        }
+
+        let successCount = 0;
+        for (const data of dataList) {
+          await formDataStore.createFormData(selectedFormId.value!, data);
+          successCount++;
+        }
+
+        ElMessage.success(`成功导入 ${successCount} 条数据`);
+        await loadFormData(selectedFormId.value!);
+      } catch (error) {
+        console.error("Import error:", error);
+        ElMessage.error("导入失败");
+      } finally {
+        target.value = "";
+      }
+    };
+    reader.readAsText(file);
   };
 
   const handleRefresh = () => {

@@ -63,6 +63,22 @@
       </div>
     </div>
 
+    <div class="dashboard__section">
+      <div class="dashboard__toolbar">
+        <h2 class="dashboard__section-title">组织架构</h2>
+        <div class="section-actions">
+          <button class="btn btn--secondary" @click="goToDepartments">
+            <span class="btn__icon">🏢</span>
+            <span>部门管理</span>
+          </button>
+          <button class="btn btn--secondary" @click="goToRoles">
+            <span class="btn__icon">🎭</span>
+            <span>角色管理</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="dashboard__content">
       <div class="dashboard__toolbar">
         <h2 class="dashboard__section-title">我的应用</h2>
@@ -257,6 +273,14 @@
     router.push(`/editor?appId=${app._id}&activeTab=data`);
   };
 
+  const goToDepartments = () => {
+    router.push("/admin/departments");
+  };
+
+  const goToRoles = () => {
+    router.push("/admin/roles");
+  };
+
   const closeModal = () => {
     showCreateModal.value = false;
     editingApp.value = null;
@@ -393,6 +417,19 @@
     margin-bottom: 24px;
   }
 
+  .section-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .dashboard__section {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
   .dashboard__section-title {
     font-size: 18px;
     font-weight: 600;
@@ -422,6 +459,18 @@
   .btn--primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(118, 159, 205, 0.4);
+  }
+
+  .btn--secondary {
+    background: #ffffff;
+    color: #52616b;
+    border: 1px solid #e8eef3;
+  }
+
+  .btn--secondary:hover {
+    background: #f0f5f9;
+    border-color: #769fcd;
+    color: #769fcd;
   }
 
   .btn__icon {

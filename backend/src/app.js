@@ -8,6 +8,7 @@ import pageRoutes from "./routes/pageRoutes.js";
 import widgetRoutes from "./routes/widgetRoutes.js";
 import formRoutes from "./routes/formRoutes.js";
 import publishRoutes from "./routes/publish.js";
+import organizationRoutes from "./routes/organizationRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/pages", pageRoutes);
 app.use("/api/widgets", widgetRoutes);
 app.use("/api/forms", formRoutes);
 app.use("/api/publish", publishRoutes);
+app.use("/api/organization", organizationRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ code: 200, message: "OK", data: { status: "running" } });

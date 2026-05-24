@@ -79,6 +79,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/views/settings/index.vue"),
   },
   {
+    path: "/admin/departments",
+    name: "DepartmentManager",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/admin/DepartmentManager.vue"),
+  },
+  {
+    path: "/admin/roles",
+    name: "RoleManager",
+    meta: { requiresAuth: true },
+    component: () => import("@/views/admin/RoleManager.vue"),
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/auth/login",
   },

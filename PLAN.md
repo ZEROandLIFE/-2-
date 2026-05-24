@@ -398,23 +398,44 @@
 
 **功能列表**：
 
-| 功能     | 说明                               |
-| :------- | :--------------------------------- |
-| 部门管理 | 创建、编辑、删除部门，支持树形结构 |
-| 角色管理 | 自定义角色，配置角色权限           |
-| 用户分配 | 将用户分配到部门和角色             |
-| 权限继承 | 支持部门/角色级别的权限继承        |
+| 功能           | 说明                                       |
+| :------------- | :----------------------------------------- |
+| 部门管理       | 创建、编辑、删除部门，支持树形结构         |
+| 部门负责人     | 为每个部门设置负责人（用于流程审批）      |
+| 部门成员管理   | 查看、添加、移除部门成员                   |
+| 角色管理       | 自定义角色，配置角色权限                   |
+| 用户分配       | 将用户分配到部门和角色                     |
+| 申请加入部门   | 用户可以申请加入其他部门（需审批）         |
+| 权限继承       | 支持部门/角色级别的权限继承                |
+
+**审批人指定方式**（为阶段9流程审批做准备）：
+
+| 指定方式     | 说明                                       | 应用场景             |
+| :----------- | :----------------------------------------- | :------------------- |
+| 指定用户     | 直接指定某个用户审批                       | 固定审批人           |
+| 指定部门     | 由部门负责人审批                           | 部门级审批           |
+| 指定角色     | 拥有该角色的任意用户审批                   | 角色级审批           |
+| 部门成员     | 部门内任意成员审批（会签）                 | 多人会签             |
 
 **后端任务**：
 1. 创建部门模型（Department.js）
 2. 创建角色模型（Role.js）
-3. 更新用户模型，添加部门、角色字段
-4. 实现组织架构CRUD接口
+3. 创建部门成员模型（DepartmentMember.js）- 用户与部门的多对多关系
+4. 创建部门申请模型（DepartmentApplication.js）- 申请加入部门
+5. 更新用户模型，添加部门、角色字段
+6. 实现组织架构CRUD接口
+7. 实现部门成员管理接口
+8. 实现申请加入/审批接口
 
 **前端任务**：
 1. 创建部门管理页面（views/admin/DepartmentManager.vue）
+   - 树形结构展示部门
+   - 创建/编辑/删除部门
+   - 设置部门负责人
+   - 查看/添加/移除部门成员
 2. 创建角色管理页面（views/admin/RoleManager.vue）
 3. 创建组织架构Store（stores/organization.js）
+4. 创建部门申请审批组件
 
 **数据库模型**：
 
@@ -422,7 +443,8 @@
 // Department.js - 部门模型
 {
   name: String,
-  parentId: ObjectId,           // 父部门ID
+  parentId: ObjectId,           // 父部门ID（顶级部门为null）
+  leaderId: ObjectId,           // 部门负责人（用户ID）
   description: String,
   order: Number,
   createdAt: Date,
@@ -437,9 +459,27 @@
   createdAt: Date,
   updatedAt: Date
 }
+
+// DepartmentMember.js - 部门成员（用户与部门多对多）
+{
+  userId: ObjectId,
+  departmentId: ObjectId,
+  isPrimary: Boolean,           // 是否主部门
+  joinedAt: Date
+}
+
+// DepartmentApplication.js - 申请加入部门
+{
+  userId: ObjectId,            // 申请人
+  departmentId: ObjectId,      // 目标部门
+  status: { type: String, enum: ['pending', 'approved', 'rejected'] },
+  reviewerId: ObjectId,         // 审批人
+  reviewedAt: Date,
+  createdAt: Date
+}
 ```
 
-**完成状态**：未开始
+**完成状态**：已完成
 
 ---
 
