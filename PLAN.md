@@ -11,6 +11,21 @@
 
 **目标**：完成项目初始化，配置开发环境
 
+**技术栈**：
+
+| 分类   | 技术       | 说明           |
+| :----- | :--------- | :------------- |
+| 后端   | Node.js 20+ | JavaScript 运行时 |
+| 后端   | Express 4.x | Web 框架       |
+| 后端   | MongoDB 7.0+ | NoSQL 数据库   |
+| 后端   | Mongoose 8.x | MongoDB ORM    |
+| 前端   | Vue 3.4+    | 前端框架       |
+| 前端   | TypeScript   | 类型系统       |
+| 前端   | Vite         | 构建工具       |
+| 前端   | Element Plus | UI 组件库      |
+| 前端   | Pinia        | 状态管理       |
+| 前端   | Vue Router   | 路由管理       |
+
 **后端任务**：
 1. 初始化 Node.js + Express 项目
 2. 配置 MongoDB 连接
@@ -26,16 +41,12 @@
 5. 配置路由
 6. 配置 Pinia
 
-**技术栈**：
-- Node.js 20+
-- Express 4.x
-- MongoDB 7.0+
-- Vue 3.4+
-- TypeScript
-- Vite
-- Element Plus
-- Pinia
-- Vue Router
+**功能特性**：
+- 前后端分离架构
+- RESTful API 设计
+- 环境变量配置管理
+- CORS 跨域支持
+- 日志记录系统
 
 **完成状态**：已完成
 
@@ -61,19 +72,32 @@
 6. 实现请求拦截器
 
 **数据库模型**：
+
 ```javascript
-// User.js
+// User.js - 用户模型
 {
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  nickname: { type: String },
-  avatar: { type: String },
-  role: { type: String, default: 'user', enum: ['admin', 'user'] },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  username: String,          // 用户名，唯一
+  email: String,            // 邮箱，唯一
+  password: String,         // 密码（加密存储）
+  nickname: String,         // 昵称
+  avatar: String,           // 头像
+  role: String,             // 角色：admin/user
+  departmentId: ObjectId,   // 主部门
+  roleIds: [ObjectId],      // 角色列表
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
+
+**功能特性**：
+- 用户注册与登录
+- 密码加密存储（bcrypt）
+- JWT Token 认证
+- Token 自动刷新机制
+- 路由守卫保护
+- 请求拦截器自动携带 Token
+- 登录状态持久化
+- Token 过期时长：Access token 1周，Refresh token 1个月
 
 **完成状态**：已完成
 
@@ -101,18 +125,26 @@
 **数据库模型**：
 
 ```javascript
-// Application.js
+// Application.js - 应用模型
 {
-  name: { type: String, required: true },
-  description: { type: String },
-  thumbnail: { type: String },
-  icon: { type: String },
-  status: { type: String, default: 'draft', enum: ['draft', 'published'] },
-  owner: { type: ObjectId, ref: 'User', required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  name: String,             // 应用名称
+  description: String,       // 应用描述
+  thumbnail: String,        // 缩略图
+  icon: String,             // 应用图标
+  status: String,           // 状态：draft/published
+  owner: ObjectId,          // 所有者
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
+
+**功能特性**：
+- 应用卡片网格展示
+- 应用创建、编辑、删除
+- 应用图标自定义
+- 应用状态管理（草稿/已发布）
+- 应用所有者权限控制
+- 应用列表筛选和搜索
 
 **完成状态**：已完成
 
@@ -154,34 +186,6 @@
 7. 实现字段宽度控制（1/4, 1/3, 1/2, 2/3, 3/4, 整行）
 8. 实现实时预览
 
-**表单设计三区域**（参考简道云）：
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  字段选择区            │  表单设计区              │  属性设置区   │
-│  ┌─────────────────┐  │  ┌─────────────────────┐  │ ┌─────────┐│
-│  │ 常用字段        │  │  │  表单画布            │  │ │ 字段属性││
-│  │ - 单行文本      │  │  │  拖拽字段到此处      │  │ │ 表单属性││
-│  │ - 多行文本      │  │  │                     │  │ └─────────┘│
-│  │ - 数字          │  │  │                     │  │            │
-│  │ - 日期时间      │  │  │                     │  │            │
-│  │ - 单选按钮组    │  │  │                     │  │            │
-│  │ - 复选框组      │  │  │                     │  │            │
-│  │ - 下拉框        │  │  │                     │  │            │
-│  │ - 下拉复选框    │  │  └─────────────────────┘  │            │
-│  ├─────────────────┤  │                          │            │
-│  │ 高级字段        │  │                          │            │
-│  │ - 图片          │  │                          │            │
-│  │ - 文件          │  │                          │            │
-│  │ - 地址          │  │                          │            │
-│  │ - 子表单        │  │                          │            │
-│  │ - 流水号        │  │                          │            │
-│  │ - 手机号        │  │                          │            │
-│  │ - 计算          │  │                          │            │
-│  │ - 富文本        │  │                          │            │
-│  └─────────────────┘  └──────────────────────────┘  └──────────┘
-```
-
 **支持的字段类型**（参考简道云）：
 
 | 分类 | 字段类型   | 说明             |
@@ -205,44 +209,33 @@
 | 高级 | 计算       | 公式计算         |
 | 高级 | 富文本     | HTML编辑         |
 
-**字段属性配置**（参考简道云右侧属性面板）：
-- 标题：字段显示名称
-- 字段标识：字段唯一标识
-- 描述信息：提示说明
-- 提示文字：输入框占位提示
-- 默认值：默认填充值
-- 必填：是否必填校验
-- 不允许重复值：唯一性校验
-- 字段权限：可见/可编辑控制
-- 字段宽度：1/4, 1/3, 1/2, 2/3, 3/4, 整行
-
-**表单数据结构**：
+**数据库模型**：
 
 ```javascript
 // Form.js - 表单定义
 {
   id: String,
   name: String,
-  type: { type: String, default: 'normal', enum: ['normal', 'workflow'] }, // 普通表单/流程表单
+  type: String,                // 'normal' | 'workflow'
   applicationId: ObjectId,
   description: String,
   fields: [{
     id: String,
-    type: String,           // 字段类型
-    title: String,          // 显示标题
-    fieldKey: String,       // 字段标识（唯一）
-    description: String,    // 描述信息
-    placeholder: String,    // 提示文字
-    defaultValue: Any,      // 默认值
-    required: Boolean,      // 必填
-    unique: Boolean,        // 不允许重复
-    visible: Boolean,       // 可见
-    editable: Boolean,      // 可编辑
-    width: String,          // 字段宽度: '1/4', '1/3', '1/2', '2/3', '3/4', 'full'
-    options: Array,         // 选项列表（单选/多选/下拉）
-    validation: Object,     // 校验规则
-    props: Object,          // 其他属性
-    sortOrder: Number       // 排序顺序
+    type: String,             // 字段类型
+    title: String,            // 显示标题
+    fieldKey: String,         // 字段标识（唯一）
+    description: String,       // 描述信息
+    placeholder: String,      // 提示文字
+    defaultValue: Any,         // 默认值
+    required: Boolean,         // 必填
+    unique: Boolean,           // 不允许重复
+    visible: Boolean,          // 可见
+    editable: Boolean,        // 可编辑
+    width: String,             // 字段宽度: '1/4', '1/3', '1/2', '2/3', '3/4', 'full'
+    options: Array,            // 选项列表（单选/多选/下拉）
+    validation: Object,        // 校验规则
+    props: Object,             // 其他属性
+    sortOrder: Number          // 排序顺序
   }],
   createdAt: Date,
   updatedAt: Date
@@ -253,13 +246,23 @@
   id: String,
   formId: ObjectId,
   applicationId: ObjectId,
-  data: Object,            // { fieldKey: value } 键值对
-  submitter: ObjectId,     // 提交人
-  submitTime: Date,        // 提交时间
-  updateTime: Date,        // 更新时间
-  status: String           // 状态：draft, submitted, approved, rejected
+  data: Object,                // { fieldKey: value } 键值对
+  submitter: ObjectId,         // 提交人
+  submitTime: Date,           // 提交时间
+  updateTime: Date,            // 更新时间
+  status: String               // 状态：draft, submitted, approved, rejected
 }
 ```
+
+**功能特性**：
+- 可视化拖拽表单设计
+- 三区域布局：字段选择区、表单设计区、属性设置区
+- 常用字段：单行文本、多行文本、数字、日期时间、单选、复选、下拉
+- 高级字段：图片、文件、地址、定位、子表单、流水号、手机号、计算、富文本
+- 字段宽度控制：1/4, 1/3, 1/2, 2/3, 3/4, 整行
+- 字段属性配置：标题、标识、描述、提示、默认值、必填、唯一、可见、可编辑
+- 实时预览功能
+- 支持普通表单和流程表单两种类型
 
 **完成状态**：已完成
 
@@ -288,24 +291,32 @@
 ```javascript
 // FieldType.js - 字段类型定义
 {
-  name: { type: String, required: true },
-  category: { type: ObjectId, ref: 'FieldCategory' },
-  icon: { type: String },
-  description: { type: String },
-  defaultProps: { type: Object },
-  isSystem: { type: Boolean, default: true },
-  sortOrder: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
+  name: String,                // 类型名称
+  category: ObjectId,         // 所属分类
+  icon: String,               // 图标
+  description: String,         // 描述
+  defaultProps: Object,        // 默认属性
+  isSystem: Boolean,           // 是否系统类型
+  sortOrder: Number,           // 排序
+  createdAt: Date
 }
 
 // FieldCategory.js - 字段分类
 {
-  name: { type: String, required: true },
-  icon: { type: String },
-  sortOrder: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
+  name: String,                // 分类名称
+  icon: String,               // 图标
+  sortOrder: Number,           // 排序
+  createdAt: Date
 }
 ```
+
+**功能特性**：
+- 字段分类管理
+- 字段类型定义
+- 字段搜索功能
+- 分类过滤展示
+- 字段图标预览
+- 系统字段保护
 
 **完成状态**：已完成
 
@@ -332,6 +343,21 @@
 5. 创建数据筛选组件（components/app/DataFilter.vue）- 搜索筛选
 6. 创建数据操作组件（components/app/DataActions.vue）- 添加、导入、导出、批量操作
 7. 创建数据Store（stores/formData.js）
+
+**数据库模型**：
+
+```javascript
+// FormData.js - 表单数据
+{
+  formId: ObjectId,          // 表单ID
+  applicationId: ObjectId,   // 应用ID
+  data: Object,              // { fieldKey: value } 键值对
+  submitter: ObjectId,        // 提交人
+  submitTime: Date,           // 提交时间
+  updateTime: Date,           // 更新时间
+  status: String             // 状态：draft, submitted, approved, rejected
+}
+```
 
 **功能特性**：
 - 数据表格展示：字段作为列，记录作为行
@@ -374,19 +400,26 @@
 ```javascript
 // FormPermission.js - 表单权限配置
 {
-  formId: ObjectId,
-  publishType: { type: String, enum: ['member', 'public', 'both'] },
+  formId: ObjectId,           // 表单ID
+  publishType: String,        // 'member' | 'public' | 'both'
   memberPermissions: [{
-    userId: ObjectId,
-    permissions: Array                   // ['submit', 'view', 'edit', 'delete', 'manage']
+    userId: ObjectId,         // 用户ID
+    permissions: [String]      // ['submit', 'view', 'edit', 'delete', 'manage']
   }],
-  publicUrl: { type: String },           // 公开发布URL
-  publicEnabled: { type: Boolean, default: false },
-  publishedAt: Date,
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  publicUrl: String,          // 公开发布URL
+  publicEnabled: Boolean,      // 是否启用公开访问
+  publishedAt: Date,          // 发布时间
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
+
+**功能特性**：
+- 表单发布与取消发布
+- 成员权限配置：填报、查看、编辑、删除、管理
+- 公开发布：生成公开访问链接
+- 发布类型切换：成员发布/公开发布/两者同时
+- 权限精细化控制
 
 **完成状态**：已完成
 
@@ -395,27 +428,6 @@
 ### 阶段8：组织架构模块
 
 **目标**：实现部门、角色管理，支持组织架构配置（参考简道云）
-
-**功能列表**：
-
-| 功能           | 说明                                       |
-| :------------- | :----------------------------------------- |
-| 部门管理       | 创建、编辑、删除部门，支持树形结构         |
-| 部门负责人     | 为每个部门设置负责人（用于流程审批）      |
-| 部门成员管理   | 查看、添加、移除部门成员                   |
-| 角色管理       | 自定义角色，配置角色权限                   |
-| 用户分配       | 将用户分配到部门和角色                     |
-| 申请加入部门   | 用户可以申请加入其他部门（需审批）         |
-| 权限继承       | 支持部门/角色级别的权限继承                |
-
-**审批人指定方式**（为阶段9流程审批做准备）：
-
-| 指定方式     | 说明                                       | 应用场景             |
-| :----------- | :----------------------------------------- | :------------------- |
-| 指定用户     | 直接指定某个用户审批                       | 固定审批人           |
-| 指定部门     | 由部门负责人审批                           | 部门级审批           |
-| 指定角色     | 拥有该角色的任意用户审批                   | 角色级审批           |
-| 部门成员     | 部门内任意成员审批（会签）                 | 多人会签             |
 
 **后端任务**：
 1. 创建部门模型（Department.js）
@@ -429,10 +441,6 @@
 
 **前端任务**：
 1. 创建部门管理页面（views/admin/DepartmentManager.vue）
-   - 树形结构展示部门
-   - 创建/编辑/删除部门
-   - 设置部门负责人
-   - 查看/添加/移除部门成员
 2. 创建角色管理页面（views/admin/RoleManager.vue）
 3. 创建组织架构Store（stores/organization.js）
 4. 创建部门申请审批组件
@@ -442,42 +450,60 @@
 ```javascript
 // Department.js - 部门模型
 {
-  name: String,
-  parentId: ObjectId,           // 父部门ID（顶级部门为null）
-  leaderId: ObjectId,           // 部门负责人（用户ID）
-  description: String,
-  order: Number,
+  name: String,              // 部门名称
+  parentId: ObjectId,        // 父部门ID（顶级部门为null）
+  leaderId: ObjectId,        // 部门负责人（用户ID）
+  description: String,        // 描述
+  order: Number,              // 排序
   createdAt: Date,
   updatedAt: Date
 }
 
 // Role.js - 角色模型
 {
-  name: String,
-  permissions: Array,           // ['form_create', 'form_edit', 'data_view', 'data_manage', ...]
-  description: String,
+  name: String,               // 角色名称
+  permissions: [String],      // 权限列表
+  description: String,        // 描述
   createdAt: Date,
   updatedAt: Date
 }
 
 // DepartmentMember.js - 部门成员（用户与部门多对多）
 {
-  userId: ObjectId,
-  departmentId: ObjectId,
-  isPrimary: Boolean,           // 是否主部门
-  joinedAt: Date
+  userId: ObjectId,          // 用户ID
+  departmentId: ObjectId,    // 部门ID
+  isPrimary: Boolean,         // 是否主部门
+  joinedAt: Date             // 加入时间
 }
 
 // DepartmentApplication.js - 申请加入部门
 {
-  userId: ObjectId,            // 申请人
-  departmentId: ObjectId,      // 目标部门
-  status: { type: String, enum: ['pending', 'approved', 'rejected'] },
-  reviewerId: ObjectId,         // 审批人
-  reviewedAt: Date,
+  userId: ObjectId,          // 申请人
+  departmentId: ObjectId,    // 目标部门
+  status: String,            // 'pending' | 'approved' | 'rejected'
+  reviewerId: ObjectId,       // 审批人
+  reviewedAt: Date,          // 审批时间
   createdAt: Date
 }
 ```
+
+**审批人指定方式**（为阶段9流程审批做准备）：
+
+| 指定方式     | 说明                                       | 应用场景             |
+| :----------- | :----------------------------------------- | :------------------- |
+| 指定用户     | 直接指定某个用户审批                       | 固定审批人           |
+| 角色         | 拥有该角色的任意用户审批                   | 角色级审批           |
+| 部门         | 部门内任意成员审批                         | 部门级审批           |
+| 部门负责人   | 由部门负责人审批                           | 部门级审批           |
+
+**功能特性**：
+- 部门管理：创建、编辑、删除部门，支持树形结构
+- 部门负责人：为每个部门设置负责人（用于流程审批）
+- 部门成员管理：查看、添加、移除部门成员
+- 角色管理：自定义角色，配置角色权限
+- 用户分配：将用户分配到部门和角色
+- 申请加入部门：用户可以申请加入其他部门（需审批）
+- 权限继承：支持部门/角色级别的权限继承
 
 **完成状态**：已完成
 
@@ -504,11 +530,23 @@
 ```
 
 **流程节点类型**：
-- 开始节点
-- 审批节点（单人审批、多人审批）
-- 条件节点
-- 分支节点
-- 结束节点
+
+| 节点类型   | 说明                                           |
+| :--------- | :--------------------------------------------- |
+| 开始节点   | 流程起点                                       |
+| 审批节点   | 支持多种审批人类型（用户/角色/部门/部门负责人） |
+| 条件节点   | 根据条件判断流程走向                           |
+| 分支节点   | 支持并行分支和条件分支                         |
+| 结束节点   | 流程终点，支持通知和结束动作                   |
+
+**审批人指定方式**：
+
+| 指定方式     | 说明                                       | 应用场景             |
+| :----------- | :----------------------------------------- | :------------------- |
+| 指定用户     | 直接指定某个用户审批                       | 固定审批人           |
+| 角色         | 拥有该角色的任意用户审批                   | 角色级审批           |
+| 部门         | 部门内任意成员审批                         | 部门级审批           |
+| 部门负责人   | 由部门负责人审批                           | 部门级审批           |
 
 **后端任务**：
 1. 创建流程模型（Workflow.js）
@@ -533,10 +571,25 @@
     id: String,
     type: { type: String, enum: ['start', 'approval', 'condition', 'branch', 'end'] },
     title: String,
-    assignees: Array,                    // 审批人
-    config: Object,                      // 节点配置
-    nextNodes: Array                     // 下一节点ID
+    assignees: Array,                    // 审批人ID列表
+    assigneeType: String,               // 审批人类型：user/role/department/leader
+    config: {
+      commentRequired: Boolean,         // 审批节点：是否需要审批意见
+      conditionField: String,           // 条件节点：条件字段
+      conditionExpr: String,            // 条件节点：条件表达式
+      trueBranch: String,              // 条件节点：满足条件的下一节点
+      falseBranch: String,             // 条件节点：不满足条件的下一节点
+      branchName: String,              // 分支节点：分支名称
+      mergeNode: String,              // 分支节点：汇聚节点
+      notify: Boolean,                 // 结束节点：是否发送通知
+      endAction: String,              // 结束节点：结束动作
+      notifyType: Array               // 结束节点：通知方式
+    },
+    nextNodes: Array,                  // 下一节点ID列表
+    x: Number,                         // 节点X坐标
+    y: Number                          // 节点Y坐标
   }],
+  isActive: Boolean,                   // 流程是否激活
   createdAt: Date,
   updatedAt: Date
 }
@@ -559,7 +612,16 @@
 }
 ```
 
-**完成状态**：✅ 已完成
+**功能特性**：
+- 节点拖拽：支持拖拽节点调整位置
+- 节点连线：箭头方向自动判断，箭头居中显示，连线横平竖直
+- 表单绑定：一个表单只能有一个流程，已绑定表单在选择列表中禁用
+- 审批人选择：支持用户、角色、部门、部门负责人，根据类型动态加载列表
+- 节点配置：不同节点类型有专属配置面板
+- 登录时长：Access token 1周，Refresh token 1个月
+- 路由保护：防止组件卸载后路由错误
+
+**完成状态**：已完成
 
 ---
 
@@ -593,8 +655,8 @@
 | 5    | 组件库模块             | ✅ 已完成 | 3天      |
 | 6    | 表单数据管理           | ✅ 已完成 | 5天      |
 | 7    | 表单发布模块           | ✅ 已完成 | 3天      |
-| 8    | 组织架构模块           | ⏳ 未开始 | 3天      |
-| 9    | 流程审批模块           | ⏳ 未开始 | 5天      |
+| 8    | 组织架构模块           | ✅ 已完成 | 3天      |
+| 9    | 流程审批模块           | ✅ 已完成 | 5天      |
 | 10   | 部署与发布             | ⏳ 未开始 | 3天      |
 
 ---

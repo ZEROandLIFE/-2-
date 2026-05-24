@@ -599,7 +599,10 @@
     } else if (node.type === "approval") {
       if (!node.assigneeType) node.assigneeType = "user";
       if (!node.assignees) node.assignees = [];
-      if (!node.config.commentRequired) node.config.commentRequired = false;
+      // 确保 commentRequired 是布尔值
+      if (typeof node.config.commentRequired !== "boolean") {
+        node.config.commentRequired = false;
+      }
     } else if (node.type === "end") {
       if (node.config.notify === undefined) node.config.notify = false;
       if (!node.config.endAction) node.config.endAction = "submit";
@@ -1020,13 +1023,13 @@
         roleApi.list(),
         departmentApi.list(),
       ]);
-      if (usersRes.success && usersRes.data) {
+      if (usersRes.code === 200 && usersRes.data) {
         availableUsers.value = usersRes.data;
       }
-      if (rolesRes.success && rolesRes.data) {
+      if (rolesRes.code === 200 && rolesRes.data) {
         availableRoles.value = rolesRes.data;
       }
-      if (deptsRes.success && deptsRes.data) {
+      if (deptsRes.code === 200 && deptsRes.data) {
         availableDepartments.value = deptsRes.data;
       }
     } catch (error) {
@@ -1061,8 +1064,10 @@
             } else if (node.type === "approval") {
               if (!node.assigneeType) node.assigneeType = "user";
               if (!node.assignees) node.assignees = [];
-              if (!node.config.commentRequired)
+              // 确保 commentRequired 是布尔值
+              if (typeof node.config.commentRequired !== "boolean") {
                 node.config.commentRequired = false;
+              }
             } else if (node.type === "end") {
               if (node.config.notify === undefined) node.config.notify = false;
               if (!node.config.endAction) node.config.endAction = "submit";

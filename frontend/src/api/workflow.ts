@@ -6,7 +6,24 @@ export interface WorkflowNode {
   title: string;
   assignees: string[];
   assigneeType: "user" | "role" | "department" | "leader";
-  config: Record<string, unknown>;
+  config: {
+    // 审批节点配置
+    commentRequired?: boolean;
+    // 条件节点配置
+    conditionField?: string;
+    conditionExpr?: string;
+    trueBranch?: string;
+    falseBranch?: string;
+    // 分支节点配置
+    branchName?: string;
+    mergeNode?: string;
+    // 结束节点配置
+    notify?: boolean;
+    endAction?: string;
+    notifyType?: string[];
+    // 其他配置
+    [key: string]: unknown;
+  };
   nextNodes: string[];
   x?: number;
   y?: number;

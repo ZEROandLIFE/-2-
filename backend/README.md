@@ -87,6 +87,23 @@ backend/
 | PUT | /:id | 更新表单 |
 | DELETE | /:id | 删除表单 |
 
+### 工作流模块 `/api/workflows`
+
+| 方法 | 路径 | 说明 |
+| :--- | :--- | :--- |
+| GET | / | 获取工作流列表 |
+| POST | / | 创建工作流 |
+| GET | /:id | 获取工作流详情 |
+| PUT | /:id | 更新工作流 |
+| DELETE | /:id | 删除工作流 |
+| PUT | /:id/activate | 激活/停用工作流 |
+| POST | /:id/instances | 提交表单数据启动流程 |
+| GET | /instances | 获取流程实例列表 |
+| GET | /my-applications | 获取我的申请 |
+| GET | /my-approvals | 获取待我审批 |
+| POST | /instances/:id/approve | 审批通过 |
+| POST | /instances/:id/reject | 审批拒绝 |
+
 ### 表单数据模块 `/api/form-data`
 
 | 方法 | 路径 | 说明 |
@@ -166,6 +183,50 @@ backend/
   name: String,         // 角色名称
   permissions: [String], // 权限列表
   description: String,  // 描述
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Workflow（工作流）
+
+```javascript
+{
+  formId: ObjectId,    // 绑定的表单ID
+  name: String,         // 工作流名称
+  description: String,  // 描述
+  nodes: [{
+    id: String,        // 节点ID
+    type: String,      // 节点类型：start, approval, condition, branch, end
+    title: String,     // 节点标题
+    assignees: [String], // 审批人ID列表
+    assigneeType: String, // 审批人类型：user, role, department, leader
+    config: Object,    // 节点配置
+    nextNodes: [String], // 下一节点ID列表
+    x: Number,         // 节点X坐标
+    y: Number          // 节点Y坐标
+  }],
+  isActive: Boolean,   // 是否激活
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### WorkflowInstance（工作流实例）
+
+```javascript
+{
+  workflowId: ObjectId, // 工作流ID
+  formDataId: ObjectId, // 表单数据ID
+  currentNodeId: String, // 当前节点ID
+  status: String,     // running, completed, rejected
+  history: [{
+    nodeId: String,   // 节点ID
+    action: String,   // submit, approve, reject
+    operator: ObjectId, // 操作人
+    comment: String,  // 审批意见
+    timestamp: Date   // 操作时间
+  }],
   createdAt: Date,
   updatedAt: Date
 }
